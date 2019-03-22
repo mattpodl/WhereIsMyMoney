@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using WhereIsMyMoney.Data;
 
 namespace WhereIsMyMoney
 {
@@ -19,10 +21,13 @@ namespace WhereIsMyMoney
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddDbContext<ExpensesDbContext>(option =>
+                option.UseSqlServer(
+                    @"Data Source=jdbc:postgresql://localhost:5432/postgres; Initial Catalog=ExpenseDb;"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ExpensesDbContext expensesDbContext)
         {
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
@@ -31,6 +36,7 @@ namespace WhereIsMyMoney
 
             app.UseHttpsRedirection();
             app.UseMvc();
+            expensesDbContext.Database.EnsureCreated();
         }
     }
 }

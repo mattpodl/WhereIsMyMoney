@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WhereIsMyMoney.Data;
 using WhereIsMyMoney.Models;
 
 namespace WhereIsMyMoney.Controllers
@@ -9,41 +9,45 @@ namespace WhereIsMyMoney.Controllers
     [Route("api/Expenses")]
     public class ExpensesController : Controller
     {
-        private static readonly List<Expense> _expenses = new List<Expense>
+        private readonly ExpensesDbContext _expensesDbContext;
+
+        private ExpensesController(ExpensesDbContext _expensesDbContext)
         {
-            new Expense
-            {
-                Amount = 13.5, Category = new Category {CategoryId = 1, Name = "Ogolne"},
-                Description = "Wydane na stacji", ExpenseId = 0
-            }
-        };
+            this._expensesDbContext = _expensesDbContext;
+        }
+
 
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok(_expenses);
+            return Ok(_expensesDbContext.Expenses);
         }
 
         [HttpGet("{id}")]
         public IActionResult Get([FromRoute] int id)
         {
-            return Ok(_expenses[id]);
+            //return Ok(_expensesDbContext.Expenses[id]);
+            return Ok();
         }
 
 
         [HttpPost]
         public IActionResult Post([FromBody] Expense expense)
         {
-            _expenses.Add(expense);
+            if (ModelState.IsValid)
+            {
+                _expensesDbContext.Expenses.Add(expense);
+                return StatusCode(StatusCodes.Status201Created);
+            }
 
-            return StatusCode(StatusCodes.Status201Created);
+            return BadRequest(ModelState);
         }
 
 
         [HttpPut("{id}")]
         public IActionResult Put([FromRoute] int id, [FromBody] Expense expense)
         {
-            _expenses[id] = expense;
+            //_expensesDbContext.Expenses[id] = expense;
 
             return StatusCode(StatusCodes.Status204NoContent);
         }
@@ -51,7 +55,7 @@ namespace WhereIsMyMoney.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete([FromRoute] int id)
         {
-            _expenses.RemoveAt(id);
+            //_expensesDbContext.Expenses.RemoveAt(id);
             return StatusCode(StatusCodes.Status204NoContent);
         }
     }
