@@ -22,7 +22,7 @@ namespace WhereIsMyMoney
         public void ConfigureServices(IServiceCollection services)
         {
             var dbUri =
-                "postgres://jdofjrfy:7tJDeHp7R7EpjXgTOAsuLmGk92A7qCXw@dumbo.db.elephantsql.com:5432/jdofjrfy"; //Configuration.GetValue<string>("dbUri");
+                "postgres://jdofjrfy:7tJDeHp7R7EpjXgTOAsuLmGk92A7qCXw@dumbo.db.elephantsql.com:5432/jdofjrfy";
             services.AddDbContext<ExpensesDbContext>(options => options.UseNpgsql(ConnectionStringParser.Get(dbUri)));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }

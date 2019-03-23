@@ -1,3 +1,4 @@
+using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WhereIsMyMoney.Data;
@@ -9,11 +10,12 @@ namespace WhereIsMyMoney.Controllers
     [Route("api/Expenses")]
     public class ExpensesController : Controller
     {
+        private const string NotFoundMessage = "No record in database";
         private readonly ExpensesDbContext _expensesDbContext;
 
-        public ExpensesController(ExpensesDbContext _expensesDbContext)
+        public ExpensesController(ExpensesDbContext expensesDbContext)
         {
-            this._expensesDbContext = _expensesDbContext;
+            _expensesDbContext = expensesDbContext;
         }
 
 
@@ -26,29 +28,40 @@ namespace WhereIsMyMoney.Controllers
         [HttpGet("{id}")]
         public IActionResult Get([FromRoute] int id)
         {
-            //return Ok(_expensesDbContext.Expenses[id]);
-            return Ok();
+            var expense = _expensesDbContext.Expenses.SingleOrDefault(e => e.ExpenseId.Equals(id));
+            if (expense == null)
+
+                return NotFound(NotFoundMessage);
+
+            return Ok(expense);
         }
 
 
         [HttpPost]
         public IActionResult Post([FromBody] Expense expense)
         {
-            if (ModelState.IsValid)
-            {
-                _expensesDbContext.Expenses.Add(expense);
-                _expensesDbContext.SaveChanges();
-                return StatusCode(StatusCodes.Status201Created, "No to sie udalo");
-            }
-
-            return BadRequest(ModelState);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            _expensesDbContext.Expenses.Add(expense);
+            _expensesDbContext.SaveChanges();
+            return StatusCode(StatusCodes.Status201Created);
         }
 
 
         [HttpPut("{id}")]
         public IActionResult Put([FromRoute] int id, [FromBody] Expense expense)
         {
-            //_expensesDbContext.Expenses[id] = expense;
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (id != expense.ExpenseId) return BadRequest();
+
+            try
+            {
+                _expensesDbContext.Expenses.Update(expense);
+                _expensesDbContext.SaveChanges();
+            }
+            catch
+            {
+                return NotFound(NotFoundMessage);
+            }
 
             return StatusCode(StatusCodes.Status204NoContent);
         }
@@ -56,7 +69,12 @@ namespace WhereIsMyMoney.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete([FromRoute] int id)
         {
-            //_expensesDbContext.Expenses.RemoveAt(id);
+            var expense = _expensesDbContext.Expenses.SingleOrDefault(e => e.ExpenseId == id);
+            if (expense == null) return NotFound(NotFoundMessage);
+
+            _expensesDbContext.Expenses.Remove(expense);
+            _expensesDbContext.SaveChanges();
+
             return StatusCode(StatusCodes.Status204NoContent);
         }
     }
