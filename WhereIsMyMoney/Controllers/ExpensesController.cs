@@ -11,7 +11,7 @@ namespace WhereIsMyMoney.Controllers
     {
         private readonly ExpensesDbContext _expensesDbContext;
 
-        private ExpensesController(ExpensesDbContext _expensesDbContext)
+        public ExpensesController(ExpensesDbContext _expensesDbContext)
         {
             this._expensesDbContext = _expensesDbContext;
         }
@@ -37,7 +37,8 @@ namespace WhereIsMyMoney.Controllers
             if (ModelState.IsValid)
             {
                 _expensesDbContext.Expenses.Add(expense);
-                return StatusCode(StatusCodes.Status201Created);
+                _expensesDbContext.SaveChanges();
+                return StatusCode(StatusCodes.Status201Created, "No to sie udalo");
             }
 
             return BadRequest(ModelState);

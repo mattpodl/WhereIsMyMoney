@@ -5,7 +5,7 @@ namespace WhereIsMyMoney.Data
 {
     public class ExpensesDbContext : DbContext
     {
-        private ExpensesDbContext(DbContextOptions<ExpensesDbContext> options) : base(options)
+        public ExpensesDbContext(DbContextOptions<ExpensesDbContext> options) : base(options)
         {
         }
 
