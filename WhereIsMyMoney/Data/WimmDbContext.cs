@@ -3,12 +3,13 @@ using WhereIsMyMoney.Models;
 
 namespace WhereIsMyMoney.Data
 {
-    public class ExpensesDbContext : DbContext
+    public class WimmDbContext : DbContext
     {
-        public ExpensesDbContext(DbContextOptions<ExpensesDbContext> options) : base(options)
+        public WimmDbContext(DbContextOptions<WimmDbContext> options) : base(options)
         {
         }
 
         public DbSet<Expense> Expenses { get; set; }
+        public DbSet<Category> Categories { get; set; }
     }
 }

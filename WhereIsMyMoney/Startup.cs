@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
 using WhereIsMyMoney.Data;
 using WhereIsMyMoney.Helpers;
+using WhereIsMyMoney.Services;
 
 namespace WhereIsMyMoney
 {
@@ -18,18 +20,20 @@ namespace WhereIsMyMoney
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             var dbUri =
-                "postgres://jdofjrfy:7tJDeHp7R7EpjXgTOAsuLmGk92A7qCXw@dumbo.db.elephantsql.com:5432/jdofjrfy";
-            services.AddDbContext<ExpensesDbContext>(options => options.UseNpgsql(ConnectionStringParser.Get(dbUri)));
+                Configuration.GetSection("ConnectionString").GetValue<string>("WimmDbContext");
+
+            services.AddDbContext<WimmDbContext>(options => options.UseNpgsql(ConnectionStringParser.Get(dbUri)));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo {Title = "Expense API", Version = "v1"}));
+            services.AddScoped<ICategoriesRepository, CategoriesRepository>();
+            services.AddScoped<IExpensesRepository, ExpensesRepository>();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env,
-            ExpensesDbContext expensesDbContext)
+            WimmDbContext wimmDbContext)
         {
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
@@ -37,8 +41,10 @@ namespace WhereIsMyMoney
                 app.UseHsts();
 
             app.UseHttpsRedirection();
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Expenses API"));
             app.UseMvc();
-            expensesDbContext.Database.EnsureCreated();
+            wimmDbContext.Database.EnsureCreated();
         }
     }
 }

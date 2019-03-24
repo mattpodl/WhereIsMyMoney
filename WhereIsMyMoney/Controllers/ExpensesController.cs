@@ -1,8 +1,7 @@
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using WhereIsMyMoney.Data;
 using WhereIsMyMoney.Models;
+using WhereIsMyMoney.Services;
 
 namespace WhereIsMyMoney.Controllers
 {
@@ -11,24 +10,24 @@ namespace WhereIsMyMoney.Controllers
     public class ExpensesController : Controller
     {
         private const string NotFoundMessage = "No record in database";
-        private readonly ExpensesDbContext _expensesDbContext;
+        private readonly IExpensesRepository _expensesRepository;
 
-        public ExpensesController(ExpensesDbContext expensesDbContext)
+        public ExpensesController(IExpensesRepository expenseRepository)
         {
-            _expensesDbContext = expensesDbContext;
+            _expensesRepository = expenseRepository;
         }
 
 
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok(_expensesDbContext.Expenses);
+            return Ok(_expensesRepository.Get());
         }
 
         [HttpGet("{id}")]
         public IActionResult Get([FromRoute] int id)
         {
-            var expense = _expensesDbContext.Expenses.SingleOrDefault(e => e.ExpenseId.Equals(id));
+            var expense = _expensesRepository.Get(id);
             if (expense == null)
 
                 return NotFound(NotFoundMessage);
@@ -41,8 +40,7 @@ namespace WhereIsMyMoney.Controllers
         public IActionResult Post([FromBody] Expense expense)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            _expensesDbContext.Expenses.Add(expense);
-            _expensesDbContext.SaveChanges();
+
             return StatusCode(StatusCodes.Status201Created);
         }
 
@@ -51,29 +49,18 @@ namespace WhereIsMyMoney.Controllers
         public IActionResult Put([FromRoute] int id, [FromBody] Expense expense)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            if (id != expense.ExpenseId) return BadRequest();
-
-            try
-            {
-                _expensesDbContext.Expenses.Update(expense);
-                _expensesDbContext.SaveChanges();
-            }
-            catch
-            {
-                return NotFound(NotFoundMessage);
-            }
-
+            if (id != expense.Id) return BadRequest();
+            if (_expensesRepository.Get(id) == null) return NotFound(NotFoundMessage);
+            _expensesRepository.Update(expense);
             return StatusCode(StatusCodes.Status204NoContent);
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete([FromRoute] int id)
         {
-            var expense = _expensesDbContext.Expenses.SingleOrDefault(e => e.ExpenseId == id);
+            var expense = _expensesRepository.Get(id);
             if (expense == null) return NotFound(NotFoundMessage);
-
-            _expensesDbContext.Expenses.Remove(expense);
-            _expensesDbContext.SaveChanges();
+            _expensesRepository.Delete(id);
 
             return StatusCode(StatusCodes.Status204NoContent);
         }
