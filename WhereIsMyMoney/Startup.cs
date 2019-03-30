@@ -24,7 +24,7 @@ namespace WhereIsMyMoney
         {
             var dbUri =
                 Configuration.GetSection("ConnectionString").GetValue<string>("WimmDbContext");
-
+            var cos = Configuration.GetConnectionString("WimmDbContext");
             services.AddDbContext<WimmDbContext>(options => options.UseNpgsql(ConnectionStringParser.Get(dbUri)));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo {Title = "Expense API", Version = "v1"}));

@@ -11,10 +11,12 @@ namespace WhereIsMyMoney.Controllers
     {
         private const string NotFoundMessage = "No record in database";
         private readonly IExpensesRepository _expensesRepository;
+        private readonly ICategoriesRepository _categoriesRepository;
 
-        public ExpensesController(IExpensesRepository expenseRepository)
+        public ExpensesController(IExpensesRepository expenseRepository, ICategoriesRepository categoriesRepository)
         {
             _expensesRepository = expenseRepository;
+            _categoriesRepository = categoriesRepository;
         }
 
 
