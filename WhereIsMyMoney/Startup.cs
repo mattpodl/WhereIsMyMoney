@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +24,18 @@ namespace WhereIsMyMoney
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(o =>
+            {
+                o.AddDefaultPolicy(
+                    builder =>
+                    {
+                        builder.WithOrigins("*",
+                            "http://localhost:4200").AllowAnyHeader()
+                            .AllowAnyMethod();
+                    });
+            });
+            
+            
             var dbUri =
                 Configuration.GetSection("ConnectionString").GetValue<string>("WimmDbContext");
             var cos = Configuration.GetConnectionString("WimmDbContext");
@@ -39,7 +53,7 @@ namespace WhereIsMyMoney
                 app.UseDeveloperExceptionPage();
             else
                 app.UseHsts();
-
+            app.UseCors();
             app.UseHttpsRedirection();
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Expenses API"));
