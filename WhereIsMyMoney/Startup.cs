@@ -30,7 +30,7 @@ namespace WhereIsMyMoney
                     builder =>
                     {
                         builder.WithOrigins("*",
-                            "http://localhost:4200").AllowAnyHeader()
+                            "http://localhost:4300").AllowAnyHeader()
                             .AllowAnyMethod();
                     });
             });

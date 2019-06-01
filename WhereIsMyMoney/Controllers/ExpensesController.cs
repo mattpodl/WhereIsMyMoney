@@ -1,4 +1,5 @@
-using Microsoft.AspNetCore.Cors;
+using System;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WhereIsMyMoney.Models;
@@ -27,6 +28,15 @@ namespace WhereIsMyMoney.Controllers
             return Ok(_expensesRepository.Get());
         }
 
+        [HttpGet("search")]
+        public IActionResult GetCategory()
+        {
+            return Ok(_expensesRepository.Get()
+                .GroupBy(e => e.Category)
+                .Select(e => new Tuple<string,double> (e.First().Category.Name,e.Sum(x => x.Amount))));
+            
+        }
+
         [HttpGet("{id}")]
         public IActionResult Get([FromRoute] int id)
         {
@@ -43,7 +53,7 @@ namespace WhereIsMyMoney.Controllers
         public IActionResult Post([FromBody] Expense expense)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-
+            _expensesRepository.Add(expense);
             return StatusCode(StatusCodes.Status201Created);
         }
 

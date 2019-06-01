@@ -8,7 +8,7 @@ namespace WhereIsMyMoney.Models
         [Required, StringLength(10, MinimumLength = 4, ErrorMessage = "Name is required, it have to be 4 to 10 characters long")]
         public string Name { get; set; }
 
-        public virtual ICollection<Expense> Expenses { get; set; }
+     //   public virtual ICollection<Expense> Expenses { get; set; }
 
         public int Id { get; set; }
     }

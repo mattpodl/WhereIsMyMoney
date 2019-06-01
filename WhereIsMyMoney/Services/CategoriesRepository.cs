@@ -1,3 +1,4 @@
+
 using WhereIsMyMoney.Data;
 using WhereIsMyMoney.Models;
 
@@ -7,6 +8,7 @@ namespace WhereIsMyMoney.Services
     {
         public CategoriesRepository(WimmDbContext wimmDbContext) : base(wimmDbContext)
         {
+
         }
     }
 }

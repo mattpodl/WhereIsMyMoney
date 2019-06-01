@@ -15,7 +15,7 @@ namespace WhereIsMyMoney.Data
        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Category>().HasMany(x => x.Expenses).WithOne(y => y.Category);
+          //  modelBuilder.Entity<Category>().HasMany(x => x.Expenses).WithOne(y => y.Category);
             
            
 

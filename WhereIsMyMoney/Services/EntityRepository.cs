@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using WhereIsMyMoney.Data;
@@ -7,19 +8,19 @@ namespace WhereIsMyMoney.Services
 {
     public class EntityRepository<T> : IEntityRepository<T> where T : class, IEntityBase, new()
     {
-        private readonly WimmDbContext _wimmDbContext;
+        protected readonly WimmDbContext _wimmDbContext;
 
         public EntityRepository(WimmDbContext wimmDbContext)
         {
             _wimmDbContext = wimmDbContext;
         }
 
-        public IEnumerable<T> Get()
+        public virtual IEnumerable<T> Get()
         {
             return _wimmDbContext.Set<T>().AsEnumerable();
         }
 
-        public T Get(int id)
+        public virtual T Get(int id)
         {
             return _wimmDbContext.Set<T>().SingleOrDefault(e => e.Id.Equals(id));
         }
