@@ -29,7 +29,7 @@ namespace WhereIsMyMoney
                 o.AddDefaultPolicy(
                     builder =>
                     {
-                        builder.WithOrigins("*",
+                        builder.WithOrigins(
                             "http://localhost:4300").AllowAnyHeader()
                             .AllowAnyMethod();
                     });
