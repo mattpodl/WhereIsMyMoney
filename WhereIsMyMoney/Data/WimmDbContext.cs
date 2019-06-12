@@ -11,5 +11,14 @@ namespace WhereIsMyMoney.Data
 
         public DbSet<Expense> Expenses { get; set; }
         public DbSet<Category> Categories { get; set; }
+        
+       
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+          //  modelBuilder.Entity<Category>().HasMany(x => x.Expenses).WithOne(y => y.Category);
+            
+           
+
+        }
     }
 }

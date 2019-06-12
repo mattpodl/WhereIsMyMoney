@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WhereIsMyMoney.Models;
@@ -11,10 +13,12 @@ namespace WhereIsMyMoney.Controllers
     {
         private const string NotFoundMessage = "No record in database";
         private readonly IExpensesRepository _expensesRepository;
+        private readonly ICategoriesRepository _categoriesRepository;
 
-        public ExpensesController(IExpensesRepository expenseRepository)
+        public ExpensesController(IExpensesRepository expenseRepository, ICategoriesRepository categoriesRepository)
         {
             _expensesRepository = expenseRepository;
+            _categoriesRepository = categoriesRepository;
         }
 
 
@@ -22,6 +26,15 @@ namespace WhereIsMyMoney.Controllers
         public IActionResult Get()
         {
             return Ok(_expensesRepository.Get());
+        }
+
+        [HttpGet("search")]
+        public IActionResult GetCategory()
+        {
+            return Ok(_expensesRepository.Get()
+                .GroupBy(e => e.Category)
+                .Select(e => new Tuple<string,double> (e.First().Category.Name,e.Sum(x => x.Amount))));
+            
         }
 
         [HttpGet("{id}")]
@@ -40,7 +53,7 @@ namespace WhereIsMyMoney.Controllers
         public IActionResult Post([FromBody] Expense expense)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-
+            _expensesRepository.Add(expense);
             return StatusCode(StatusCodes.Status201Created);
         }
 
